@@ -41,7 +41,7 @@ ROOT_DIR=$(dirname $BIN_DIR)
 BUILD_DIR=$1
 CACHE_DIR=$2
 
-# The detected application type (`Python`|`Python/Django`).
+# The detected application type (`Python`|`Python/Django`|`Python/web2py).
 NAME=$($BIN_DIR/detect $BUILD_DIR)
 
 # Where to store the Pip download cache.
@@ -208,13 +208,15 @@ fi
 puts-step "Installing dependencies using pip version $(pip --version | awk '{print $2}')"
 pip install --use-mirrors -r requirements.txt --exists-action=w --src=./.heroku/src | indent
 
-# Do additional application hackery if applications appears to be a Django app.
-# Optionally, disable all Django-specific changes with `DISABLE_INJECTION` env.
+# Do additional application hackery if applications appears to be a Django or web2py app.
+# Optionally, disable all Django|web2py-specific changes with `DISABLE_INJECTION` env.
 #
 # See [`bin/steps/django`](django.html).
 
 if [ "$NAME" = "Python/Django" ]; then
   source $BIN_DIR/steps/django/init
+elif [ "$NAME" = "Python/web2py" ]; then
+  source $BIN_DIR/steps/web2py/init
 fi
 
 # Make Virtualenv's paths relative for portability.
