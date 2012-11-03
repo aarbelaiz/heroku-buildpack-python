@@ -33,3 +33,18 @@ addons:
 default_process_types:
   web:      python $PROJECT/manage.py runserver 0.0.0.0:\$PORT --noreload
 EOF
+
+[ "$NAME" = "Python/web2py" ] || exit 0
+
+MANAGE_FILE=$(cd $BUILD_DIR && find . -maxdepth 3 -type f -name 'anyserver.py' | head -1)
+MANAGE_FILE=${MANAGE_FILE:2}
+PROJECT=$(dirname $MANAGE_FILE)
+
+cat <<EOF
+
+addons:
+  shared-database:5mb
+
+default_process_types:
+  web:      python $PROJECT/anyserver.py gunicorn 0.0.0.0:\$PORT
+EOF
