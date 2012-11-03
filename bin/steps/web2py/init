@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+DB_FILE=$(find . -maxdepth 3 -type f -name 'db.py' | head -1)
+PROJECT=$(dirname $SETTINGS_FILE)
+MANAGE_FILE=$(find . -maxdepth 1 -type f -name 'web2py.py' | head -1)
+MANAGE_FILE=${MANAGE_FILE:2}
+
+if [ "$FRESH_APP" ]; then
+    # Legacy Django injection for existing applications.
+    touch .heroku/injection_disabled
+fi
+
+# Disable injection for new applications.
+if [ -f .heroku/injection_disabled ]; then
+  DISABLE_INJECTION=1
+fi
+
+# if [ -f .heroku/collectstatic_disabled ]; then
+#   DISABLE_COLLECTSTATIC=1
+# fi
+
+export DB_FILE MANAGE_FILE PROJECT DISABLE_INJECTION
+
+if [ ! "$DISABLE_INJECTION" ]; then
+    # Legacy Django injection for existing applications.
+    source $BIN_DIR/steps/web2py/injection
+fi
+
+# if [ ! "$DISABLE_COLLECTSTATIC" ]; then
+#     source $BIN_DIR/steps/web2py/collectstatic
+# fi
