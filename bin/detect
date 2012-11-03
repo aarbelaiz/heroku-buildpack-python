@@ -26,7 +26,7 @@ if [ ! -f $BUILD_DIR/requirements.txt ]; then
 fi
 
 # `Python/Django` if `**/settings.py` is present and `django` exists in
-# `requirements.txt`.
+# `requirements.txt`, or `Python/Web2py`if web2py is present on `requirements.txt
 #
 # Otherwise, `Python`.
 
@@ -61,4 +61,4 @@ IFS_BAK=
 SETTINGS_FILE=$(find $BUILD_DIR/. -maxdepth 2 -type f -name 'settings.py' | head -1)
 
 
-[ -n "$SETTINGS_FILE" ] && ( list_requirements $BUILD_DIR/requirements.txt | grep -Fiq "django" ) && echo Python/Django || echo Python
+[ -n "$SETTINGS_FILE" ] && ( list_requirements $BUILD_DIR/requirements.txt | grep -Fiq "django" ) && echo Python/Django || [ -z "$SETTINGS_FILE" ] && ( list_requirements $BUILD_DIR/requirements.txt | grep -Fiq "web2py" ) && echo Python/web2py || echo Python
